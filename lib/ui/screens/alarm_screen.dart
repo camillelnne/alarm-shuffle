@@ -1,4 +1,5 @@
 import "package:alarm_shuffle/ui/components/alarm_card.dart";
+import "package:alarm_shuffle/ui/components/new_alarm.dart";
 import "package:alarm_shuffle/viewmodels/alarm_viewmodel.dart";
 import "package:flutter/material.dart";
 import "package:flutter_riverpod/flutter_riverpod.dart";
@@ -19,18 +20,16 @@ class AlarmScreen extends ConsumerWidget {
           ? const _EmptyState()
           : _AlarmList(alarms: alarmViewModel.alarms),
       floatingActionButton: FloatingActionButton(
-        onPressed: () => _addSampleAlarm(ref),
+        onPressed: () {
+          showNewAlarmOverlay(context, ref);
+        },
         tooltip: "Add Alarm",
         child: const Icon(Icons.add),
       ),
+
     );
   }
 
-  void _addSampleAlarm(WidgetRef ref) {
-    final now = DateTime.now();
-    final sampleAlarm = DateTime(now.year, now.month, now.day, now.hour, now.minute + 1);
-    ref.read(alarmProvider).addAlarm(sampleAlarm);
-  }
 }
 
 // Widget for the empty state
@@ -65,8 +64,9 @@ class _EmptyState extends StatelessWidget {
 }
 
 // Widget for displaying the alarm list
+// Widget for displaying the alarm list
 class _AlarmList extends StatelessWidget {
-  final List<DateTime> alarms;
+  final List<Alarm> alarms; // Now expects a list of Alarm objects
 
   const _AlarmList({required this.alarms});
 
@@ -76,10 +76,11 @@ class _AlarmList extends StatelessWidget {
       padding: const EdgeInsets.all(8.0),
       itemCount: alarms.length,
       itemBuilder: (context, index) {
-        final alarmTime = alarms[index];
-        return AlarmCard(alarmTime: alarmTime);
+        final alarm = alarms[index]; // Each item is an Alarm object
+        return AlarmCard(alarm: alarm); // Pass the Alarm object to AlarmCard
       },
     );
   }
 }
+
 

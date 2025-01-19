@@ -1,15 +1,11 @@
+import "package:alarm_shuffle/viewmodels/alarm_viewmodel.dart";
 import "package:flutter/material.dart";
 import "package:flutter_riverpod/flutter_riverpod.dart";
 
 class AlarmCard extends ConsumerWidget {
-  final DateTime alarmTime;
-  final bool isActive;
+  final Alarm alarm;
 
-  const AlarmCard({
-    required this.alarmTime,
-    this.isActive = true,
-    super.key,
-  });
+  const AlarmCard({required this.alarm, super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -29,33 +25,32 @@ class AlarmCard extends ConsumerWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  "${alarmTime.hour.toString().padLeft(2, '0')}:${alarmTime.minute.toString().padLeft(2, '0')}",
+                  alarm.time.format(context),
                   style: const TextStyle(
                     fontSize: 32,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
                 const SizedBox(height: 4),
-                Text(
-                  isActive ? "Active" : "Inactive",
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: isActive ? Colors.green : Colors.grey,
+                if (alarm.label.isNotEmpty)
+                  Text(
+                    alarm.label,
+                    style: const TextStyle(fontSize: 16, color: Colors.grey),
                   ),
-                ),
               ],
             ),
 
             // Toggle and More Actions
             Row(
               children: [
-                // Toggle Switch
-                Switch(
-                  value: isActive,
-                  onChanged: (value) {
-                    //TODO
-                  },
-                ),
+            // Toggle Switch
+              Switch(
+                value: alarm.isActive,
+                onChanged: (value) {
+                  // Toggle the alarm's active state using the AlarmViewModel
+                  ref.read(alarmProvider).toggleAlarm(alarm, value);
+                },
+              ),
 
                 // Dropdown/Expand Button (Optional)
                 IconButton(
