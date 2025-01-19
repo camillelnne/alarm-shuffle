@@ -8,10 +8,9 @@ Alarm shuffle is a simple alarm clock that allows you to set alarms and plays ra
 ```
 lib/
 ├── ui/
-│   ├── views/
+│   ├── widgets/
 │   │   ├── alarm_screen.dart
 │   │   └── mp3_picker_screen.dart
-│   ├── widgets/
 │   │   ├── alarm_tile.dart
 │   │   └── mp3_tile.dart
 │   └── view_models/

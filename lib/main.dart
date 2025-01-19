@@ -1,4 +1,4 @@
-import "package:alarm_shuffle/views/alarm_shuffle_app.dart";
+import "package:alarm_shuffle/ui/alarm_shuffle_app.dart";
 import "package:flutter/material.dart";
 import "package:hooks_riverpod/hooks_riverpod.dart";
 

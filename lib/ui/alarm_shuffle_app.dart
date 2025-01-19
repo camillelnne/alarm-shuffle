@@ -1,4 +1,4 @@
-import "package:alarm_shuffle/views/screens/alarm_screen.dart";
+import "package:alarm_shuffle/ui/widgets/alarm_screen.dart";
 import "package:flutter/material.dart";
 
 class AlarmShuffleApp extends StatelessWidget {
