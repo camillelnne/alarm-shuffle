@@ -1,18 +1,21 @@
+import "package:alarm_shuffle/ui/components/days_selector.dart";
 import "package:alarm_shuffle/viewmodels/alarm_viewmodel.dart";
 import "package:flutter/material.dart";
 import "package:flutter_riverpod/flutter_riverpod.dart";
 
+/// Function to show the new alarm form as a modal bottom sheet.
 void showNewAlarmOverlay(BuildContext context, WidgetRef ref) {
   showModalBottomSheet(
     context: context,
     isScrollControlled: true,
     backgroundColor: Colors.transparent,
     builder: (BuildContext context) {
-      return const NewAlarmForm();
+      return const NewAlarmForm(); // Displays the NewAlarmForm
     },
   );
 }
 
+/// Stateful widget for creating a new alarm.
 class NewAlarmForm extends ConsumerStatefulWidget {
   const NewAlarmForm({super.key});
 
@@ -99,20 +102,13 @@ class _NewAlarmFormState extends ConsumerState<NewAlarmForm> {
                   "Repeat Days",
                   style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
                 ),
-                Wrap(
-                  spacing: 8,
-                  children: List.generate(7, (index) {
-                    final dayNames = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
-                    return ChoiceChip(
-                      label: Text(dayNames[index]),
-                      selected: repeatDays[index],
-                      onSelected: (selected) {
-                        setState(() {
-                          repeatDays[index] = selected;
-                        });
-                      },
-                    );
-                  }),
+                DaysSelector(
+                  repeatDays: repeatDays,
+                  onDayToggle: (index, isSelected) {
+                    setState(() {
+                      repeatDays[index] = isSelected;
+                    });
+                  },
                 ),
                 const SizedBox(height: 16),
 

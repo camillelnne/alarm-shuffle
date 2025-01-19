@@ -1,3 +1,4 @@
+import "package:alarm_shuffle/ui/components/days_selector.dart";
 import "package:alarm_shuffle/viewmodels/alarm_viewmodel.dart";
 import "package:flutter/material.dart";
 import "package:flutter_riverpod/flutter_riverpod.dart";
@@ -96,11 +97,21 @@ class AlarmCardState extends ConsumerState<AlarmCard> {
             if (isExpanded) ...[
               const SizedBox(height: 16),
 
-              // Editable Repeat Days
-              Wrap(
-                spacing: 8,
-                children: _buildEditableRepeatDays(),
-              ),
+            Wrap(
+              spacing: 8,
+              children: [
+                DaysSelector(
+                  repeatDays: editableRepeatDays,
+                  onDayToggle: (index, isSelected) {
+                    setState(() {
+                      editableRepeatDays[index] = isSelected;
+                      widget.alarm.repeatDays[index] = isSelected; // Save changes
+                    });
+                  },
+                ),
+              ],
+            ),
+
 
               // Expanded Options (Delete Button)
               const SizedBox(height: 16),
@@ -177,30 +188,6 @@ class AlarmCardState extends ConsumerState<AlarmCard> {
             color: isSelected ? Colors.blue : Colors.grey,
           ),
         ),
-      );
-    });
-  }
-
-  // Helper function to build the editable repeat days chips
-  List<Widget> _buildEditableRepeatDays() {
-    const dayLabels = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
-    return List.generate(7, (index) {
-      final isSelected = editableRepeatDays[index];
-      return ChoiceChip(
-        label: Text(dayLabels[index]),
-        selected: isSelected,
-        onSelected: (selected) {
-          setState(() {
-            editableRepeatDays[index] = selected;
-            // Save changes to the alarm view model
-            widget.alarm.repeatDays[index] = selected;
-          });
-        },
-        // selectedColor: Colors.blue,
-        // backgroundColor: Colors.grey[200],
-        // labelStyle: TextStyle(
-        //   color: isSelected ? Colors.white : Colors.black,
-        // ),
       );
     });
   }
