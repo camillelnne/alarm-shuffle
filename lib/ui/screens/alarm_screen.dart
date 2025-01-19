@@ -72,33 +72,56 @@ class _AlarmList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListView.builder(
+      padding: const EdgeInsets.all(8.0), // Add some padding around the list
       itemCount: alarms.length,
       itemBuilder: (context, index) {
         final alarmTime = alarms[index];
-        return _AlarmTile(alarmTime: alarmTime);
+        return _AlarmCard(alarmTime: alarmTime);
       },
     );
   }
 }
 
-// Widget for a single alarm tile
-class _AlarmTile extends ConsumerWidget {
+// Widget for a single alarm card
+class _AlarmCard extends ConsumerWidget {
   final DateTime alarmTime;
 
-  const _AlarmTile({required this.alarmTime});
+  const _AlarmCard({required this.alarmTime});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return ListTile(
-      title: Text(
-        "Alarm: ${alarmTime.hour}:${alarmTime.minute.toString().padLeft(2, '0')}",
-        style: const TextStyle(fontSize: 18),
+    return Card(
+      margin: const EdgeInsets.symmetric(vertical: 8.0), // Spacing between cards
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12.0), // Rounded corners
       ),
-      trailing: IconButton(
-        icon: const Icon(Icons.delete, color: Colors.red),
-        onPressed: () {
-          ref.read(alarmProvider).removeAlarm(alarmTime);
-        },
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            // Alarm Time
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  "Alarm: ${alarmTime.hour}:${alarmTime.minute.toString().padLeft(2, '0')}",
+                  style: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
+            ),
+            // Delete Button
+            IconButton(
+              icon: const Icon(Icons.delete),
+              onPressed: () {
+                ref.read(alarmProvider).removeAlarm(alarmTime);
+              },
+            ),
+          ],
+        ),
       ),
     );
   }
