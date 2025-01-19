@@ -1,3 +1,4 @@
+import "package:alarm_shuffle/ui/components/alarm_card.dart";
 import "package:alarm_shuffle/viewmodels/alarm_viewmodel.dart";
 import "package:flutter/material.dart";
 import "package:flutter_riverpod/flutter_riverpod.dart";
@@ -11,7 +12,7 @@ class AlarmScreen extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Alarm Clock"),
+        title: const Text("Alarme"),
         centerTitle: true,
       ),
       body: alarmViewModel.alarms.isEmpty
@@ -72,57 +73,13 @@ class _AlarmList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListView.builder(
-      padding: const EdgeInsets.all(8.0), // Add some padding around the list
+      padding: const EdgeInsets.all(8.0),
       itemCount: alarms.length,
       itemBuilder: (context, index) {
         final alarmTime = alarms[index];
-        return _AlarmCard(alarmTime: alarmTime);
+        return AlarmCard(alarmTime: alarmTime);
       },
     );
   }
 }
 
-// Widget for a single alarm card
-class _AlarmCard extends ConsumerWidget {
-  final DateTime alarmTime;
-
-  const _AlarmCard({required this.alarmTime});
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    return Card(
-      margin: const EdgeInsets.symmetric(vertical: 8.0), // Spacing between cards
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12.0), // Rounded corners
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            // Alarm Time
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  "Alarm: ${alarmTime.hour}:${alarmTime.minute.toString().padLeft(2, '0')}",
-                  style: const TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ],
-            ),
-            // Delete Button
-            IconButton(
-              icon: const Icon(Icons.delete),
-              onPressed: () {
-                ref.read(alarmProvider).removeAlarm(alarmTime);
-              },
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
