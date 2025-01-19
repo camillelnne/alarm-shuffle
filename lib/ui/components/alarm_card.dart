@@ -2,13 +2,20 @@ import "package:alarm_shuffle/viewmodels/alarm_viewmodel.dart";
 import "package:flutter/material.dart";
 import "package:flutter_riverpod/flutter_riverpod.dart";
 
-class AlarmCard extends ConsumerWidget {
+class AlarmCard extends ConsumerStatefulWidget {
   final Alarm alarm;
 
   const AlarmCard({required this.alarm, super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  AlarmCardState createState() => AlarmCardState();
+}
+
+class AlarmCardState extends ConsumerState<AlarmCard> {
+  bool isExpanded = false; // Track whether the card is expanded
+
+  @override
+  Widget build(BuildContext context) {
     return Card(
       margin: const EdgeInsets.symmetric(vertical: 8.0),
       elevation: 2.0,
@@ -28,39 +35,41 @@ class AlarmCard extends ConsumerWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      alarm.time.format(context),
+                      widget.alarm.time.format(context),
                       style: const TextStyle(
                         fontSize: 32,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
                     const SizedBox(height: 4),
-                    if (alarm.label.isNotEmpty)
+                    if (widget.alarm.label.isNotEmpty)
                       Text(
-                        alarm.label,
+                        widget.alarm.label,
                         style: const TextStyle(fontSize: 16, color: Colors.grey),
                       ),
                   ],
                 ),
 
-                // Toggle and Delete Actions
+                // Toggle and Expand Actions
                 Row(
                   children: [
                     // Toggle Switch
                     Switch(
-                      value: alarm.isActive,
+                      value: widget.alarm.isActive,
                       onChanged: (value) {
-                        ref.read(alarmProvider).toggleAlarm(alarm, value);
+                        ref.read(alarmProvider).toggleAlarm(widget.alarm, value);
                       },
                     ),
 
-                    // Delete Button
+                    // Expand Button
                     IconButton(
-                      icon: const Icon(Icons.delete),
-                      tooltip: "Delete Alarm",
+                      icon: Icon(
+                        isExpanded ? Icons.expand_less : Icons.expand_more,
+                      ),
                       onPressed: () {
-                        // Show confirmation dialog before deletion
-                        _showDeleteConfirmation(context, ref, alarm);
+                        setState(() {
+                          isExpanded = !isExpanded;
+                        });
                       },
                     ),
                   ],
@@ -70,41 +79,53 @@ class AlarmCard extends ConsumerWidget {
 
             const SizedBox(height: 8),
 
-            // Repeat Days or Text (Everyday/Tomorrow)
+            // Show Repeat Days or "Everyday/Tomorrow"
             Row(
-              children: _buildRepeatDays(alarm.repeatDays),
+              children: _buildRepeatDays(widget.alarm.repeatDays),
             ),
+
+            // Expanded Section
+            if (isExpanded) ...[
+              const SizedBox(height: 16),
+
+              // Expanded Options (Delete Button)
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  IconButton(
+                    icon: const Icon(Icons.delete, color: Colors.red),
+                    tooltip: "Delete Alarm",
+                    onPressed: () {
+                      _deleteAlarmWithUndo(context, ref);
+                    },
+                  ),
+                ],
+              ),
+            ],
           ],
         ),
       ),
     );
   }
 
-  // Helper function to show a delete confirmation dialog
-  void _showDeleteConfirmation(BuildContext context, WidgetRef ref, Alarm alarm) {
-    showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: const Text("Delete Alarm"),
-          content: const Text("Are you sure you want to delete this alarm?"),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.pop(context); // Close the dialog
-              },
-              child: const Text("Cancel"),
-            ),
-            TextButton(
-              onPressed: () {
-                ref.read(alarmProvider).removeAlarm(alarm); // Delete the alarm
-                Navigator.pop(context); // Close the dialog
-              },
-              child: const Text("Delete", style: TextStyle(color: Colors.red)),
-            ),
-          ],
-        );
-      },
+  // Function to handle delete with Snackbar
+  void _deleteAlarmWithUndo(BuildContext context, WidgetRef ref) {
+    final alarmProviderRef = ref.read(alarmProvider);
+    alarmProviderRef.removeAlarm(widget.alarm); // Delete the alarm
+
+    // Show Snackbar with Undo option
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: const Text("Alarm deleted"),
+        action: SnackBarAction(
+          label: "Undo",
+          onPressed: () {
+            // Undo delete by re-adding the alarm
+            alarmProviderRef.addAlarm(widget.alarm);
+          },
+        ),
+        duration: const Duration(seconds: 4), // Snackbar duration
+      ),
     );
   }
 
