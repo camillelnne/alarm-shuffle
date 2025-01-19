@@ -43,7 +43,7 @@ class AlarmCard extends ConsumerWidget {
                   ],
                 ),
 
-                // Toggle and More Actions
+                // Toggle and Delete Actions
                 Row(
                   children: [
                     // Toggle Switch
@@ -53,11 +53,14 @@ class AlarmCard extends ConsumerWidget {
                         ref.read(alarmProvider).toggleAlarm(alarm, value);
                       },
                     ),
-                    // Dropdown/Expand Button (Optional)
+
+                    // Delete Button
                     IconButton(
-                      icon: const Icon(Icons.expand_more),
+                      icon: const Icon(Icons.delete),
+                      tooltip: "Delete Alarm",
                       onPressed: () {
-                        // Open details or edit screen
+                        // Show confirmation dialog before deletion
+                        _showDeleteConfirmation(context, ref, alarm);
                       },
                     ),
                   ],
@@ -77,9 +80,36 @@ class AlarmCard extends ConsumerWidget {
     );
   }
 
+  // Helper function to show a delete confirmation dialog
+  void _showDeleteConfirmation(BuildContext context, WidgetRef ref, Alarm alarm) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text("Delete Alarm"),
+          content: const Text("Are you sure you want to delete this alarm?"),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context); // Close the dialog
+              },
+              child: const Text("Cancel"),
+            ),
+            TextButton(
+              onPressed: () {
+                ref.read(alarmProvider).removeAlarm(alarm); // Delete the alarm
+                Navigator.pop(context); // Close the dialog
+              },
+              child: const Text("Delete", style: TextStyle(color: Colors.red)),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   // Helper function to build the repeat days row
   List<Widget> _buildRepeatDays(List<bool> repeatDays) {
-    // Check if all days are selected
     if (repeatDays.every((day) => day)) {
       return [
         const Text(
@@ -89,17 +119,15 @@ class AlarmCard extends ConsumerWidget {
       ];
     }
 
-    // Check if no days are selected
     if (repeatDays.every((day) => !day)) {
       return [
         const Text(
           "Tomorrow",
-          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.blueGrey),
+          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.orange),
         ),
       ];
     }
 
-    // Otherwise, display the day initials
     const dayLabels = ["M", "T", "W", "T", "F", "S", "S"];
     return List.generate(7, (index) {
       final isSelected = repeatDays[index];
