@@ -13,6 +13,14 @@ class AlarmCard extends ConsumerStatefulWidget {
 
 class AlarmCardState extends ConsumerState<AlarmCard> {
   bool isExpanded = false; // Track whether the card is expanded
+  late List<bool> editableRepeatDays; // Editable list of repeat days
+
+  @override
+  void initState() {
+    super.initState();
+    // Copy the initial repeat days to allow editing
+    editableRepeatDays = List.from(widget.alarm.repeatDays);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -88,7 +96,14 @@ class AlarmCardState extends ConsumerState<AlarmCard> {
             if (isExpanded) ...[
               const SizedBox(height: 16),
 
+              // Editable Repeat Days
+              Wrap(
+                spacing: 8,
+                children: _buildEditableRepeatDays(),
+              ),
+
               // Expanded Options (Delete Button)
+              const SizedBox(height: 16),
               Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
@@ -162,6 +177,30 @@ class AlarmCardState extends ConsumerState<AlarmCard> {
             color: isSelected ? Colors.blue : Colors.grey,
           ),
         ),
+      );
+    });
+  }
+
+  // Helper function to build the editable repeat days chips
+  List<Widget> _buildEditableRepeatDays() {
+    const dayLabels = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+    return List.generate(7, (index) {
+      final isSelected = editableRepeatDays[index];
+      return ChoiceChip(
+        label: Text(dayLabels[index]),
+        selected: isSelected,
+        onSelected: (selected) {
+          setState(() {
+            editableRepeatDays[index] = selected;
+            // Save changes to the alarm view model
+            widget.alarm.repeatDays[index] = selected;
+          });
+        },
+        // selectedColor: Colors.blue,
+        // backgroundColor: Colors.grey[200],
+        // labelStyle: TextStyle(
+        //   color: isSelected ? Colors.white : Colors.black,
+        // ),
       );
     });
   }
