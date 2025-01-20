@@ -26,6 +26,7 @@ class AlarmCardState extends ConsumerState<AlarmCard> {
   @override
   Widget build(BuildContext context) {
     final isActive = widget.alarm.isActive; // Track active/inactive state
+    final textColor = isActive ? Colors.black : Colors.grey;
 
     return Card(
       margin: const EdgeInsets.symmetric(vertical: 8.0),
@@ -47,16 +48,17 @@ class AlarmCardState extends ConsumerState<AlarmCard> {
                   children: [
                     Text(
                       widget.alarm.time.format(context),
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 32,
                         fontWeight: FontWeight.bold,
+                        color: textColor,
                       ),
                     ),
                     const SizedBox(height: 4),
                     if (widget.alarm.label.isNotEmpty)
                       Text(
                         widget.alarm.label,
-                        style: const TextStyle(fontSize: 16, color: Colors.grey),
+                        style: TextStyle(fontSize: 16, color: textColor),
                       ),
                   ],
                 ),
@@ -76,6 +78,7 @@ class AlarmCardState extends ConsumerState<AlarmCard> {
                     IconButton(
                       icon: Icon(
                         isExpanded ? Icons.expand_less : Icons.expand_more,
+                        color: textColor,
                       ),
                       onPressed: () {
                         setState(() {
@@ -92,7 +95,7 @@ class AlarmCardState extends ConsumerState<AlarmCard> {
 
             // Show Repeat Days or "Everyday/Tomorrow"
             Row(
-              children: _buildRepeatDays(widget.alarm.repeatDays),
+              children: _buildRepeatDays(widget.alarm.repeatDays, isActive),
             ),
 
             // Expanded Section
@@ -153,21 +156,21 @@ class AlarmCardState extends ConsumerState<AlarmCard> {
   }
 
   // Helper function to build the repeat days row
-  List<Widget> _buildRepeatDays(List<bool> repeatDays) {
+  List<Widget> _buildRepeatDays(List<bool> repeatDays, bool isActive) {
     if (repeatDays.every((day) => day)) {
       return [
-        const Text(
+        Text(
           "Everyday",
-          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.green),
+          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: isActive ? Colors.blue : Colors.grey),
         ),
       ];
     }
 
     if (repeatDays.every((day) => !day)) {
       return [
-        const Text(
+        Text(
           "Tomorrow",
-          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.orange),
+          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: isActive ? Colors.blue : Colors.grey),
         ),
       ];
     }
@@ -182,7 +185,7 @@ class AlarmCardState extends ConsumerState<AlarmCard> {
           style: TextStyle(
             fontSize: 16,
             fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-            color: isSelected ? Colors.blue : Colors.grey,
+            color: (isSelected && isActive) ? Colors.blue : Colors.grey,
           ),
         ),
       );
