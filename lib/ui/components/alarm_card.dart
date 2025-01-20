@@ -25,6 +25,8 @@ class AlarmCardState extends ConsumerState<AlarmCard> {
 
   @override
   Widget build(BuildContext context) {
+    final isActive = widget.alarm.isActive; // Track active/inactive state
+
     return Card(
       margin: const EdgeInsets.symmetric(vertical: 8.0),
       elevation: 2.0,
@@ -64,7 +66,7 @@ class AlarmCardState extends ConsumerState<AlarmCard> {
                   children: [
                     // Toggle Switch
                     Switch(
-                      value: widget.alarm.isActive,
+                      value: isActive,
                       onChanged: (value) {
                         ref.read(alarmProvider).toggleAlarm(widget.alarm, value);
                       },
@@ -97,21 +99,16 @@ class AlarmCardState extends ConsumerState<AlarmCard> {
             if (isExpanded) ...[
               const SizedBox(height: 16),
 
-            Wrap(
-              spacing: 8,
-              children: [
-                DaysSelector(
-                  repeatDays: editableRepeatDays,
-                  onDayToggle: (index, isSelected) {
-                    setState(() {
-                      editableRepeatDays[index] = isSelected;
-                      widget.alarm.repeatDays[index] = isSelected; // Save changes
-                    });
-                  },
-                ),
-              ],
-            ),
-
+              // Editable Days Selector
+              DaysSelector(
+                repeatDays: editableRepeatDays,
+                onDayToggle: (index, isSelected) {
+                  setState(() {
+                    editableRepeatDays[index] = isSelected;
+                    widget.alarm.repeatDays[index] = isSelected; // Update alarm state
+                  });
+                },
+              ),
 
               // Expanded Options (Delete Button)
               const SizedBox(height: 16),
