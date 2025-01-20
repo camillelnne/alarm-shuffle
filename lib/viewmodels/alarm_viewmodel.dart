@@ -39,6 +39,31 @@ class AlarmViewModel extends ChangeNotifier {
       notifyListeners();
     }
   }
+
+
+  String getAlarmDayLabel(Alarm alarm) {
+    final now = DateTime.now();
+    final alarmDateTime = DateTime(
+      now.year,
+      now.month,
+      now.day,
+      alarm.time.hour,
+      alarm.time.minute,
+    );
+
+    if (alarm.repeatDays.every((day) => !day)) {
+      // One-time alarm
+      return alarmDateTime.isAfter(now) ? "Today" : "Tomorrow";
+    }
+
+    if (alarm.repeatDays.every((day) => day)) {
+      // Repeats every day
+      return "Everyday";
+    }
+
+    // For custom repeat days, no specific label
+    return "";
+  }
 }
 
 

@@ -157,23 +157,20 @@ class AlarmCardState extends ConsumerState<AlarmCard> {
 
   // Helper function to build the repeat days row
   List<Widget> _buildRepeatDays(List<bool> repeatDays, bool isActive) {
-    if (repeatDays.every((day) => day)) {
-      return [
-        Text(
-          "Everyday",
-          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: isActive ? Colors.blue : Colors.grey),
-        ),
-      ];
-    }
+final label = ref.read(alarmProvider).getAlarmDayLabel(widget.alarm);
 
-    if (repeatDays.every((day) => !day)) {
-      return [
-        Text(
-          "Tomorrow",
-          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: isActive ? Colors.blue : Colors.grey),
+  if (label.isNotEmpty) {
+    return [
+      Text(
+        label,
+        style: TextStyle(
+          fontSize: 16,
+          fontWeight: FontWeight.bold,
+          color: isActive ? Colors.blue : Colors.grey,
         ),
-      ];
-    }
+      ),
+    ];
+  }
 
     const dayLabels = ["M", "T", "W", "T", "F", "S", "S"];
     return List.generate(7, (index) {

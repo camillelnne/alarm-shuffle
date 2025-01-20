@@ -13,7 +13,7 @@ class AlarmScreen extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Alarme"),
+        title: const Text("Alarms"),
         centerTitle: true,
       ),
       body: alarmViewModel.alarms.isEmpty
