@@ -64,7 +64,6 @@ class _EmptyState extends StatelessWidget {
 }
 
 // Widget for displaying the alarm list
-// Widget for displaying the alarm list
 class _AlarmList extends StatelessWidget {
   final List<Alarm> alarms; // Now expects a list of Alarm objects
 
